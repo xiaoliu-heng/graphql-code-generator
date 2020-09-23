@@ -86,6 +86,26 @@ describe('Apollo Angular', () => {
       await validateTypeScript(content, schema, docs, {});
     });
 
+    it(`should add a constructor and super call (Issue #4366)`, async () => {
+      const docs = [{ location: '', document: basicDoc }];
+      const content = (await plugin(
+        schema,
+        docs,
+        {},
+        {
+          outputFile: 'graphql.ts',
+        }
+      )) as Types.ComplexPluginOutput;
+
+      expect(content.content).toBeSimilarStringTo(`
+          constructor(apollo: Apollo.Apollo) {
+            super(apollo);
+          }
+        }
+      `);
+      await validateTypeScript(content, schema, docs, {});
+    });
+
     it(`should add the correct angular imports with override`, async () => {
       const docs = [{ location: '', document: basicDoc }];
       const content = (await plugin(
@@ -364,7 +384,7 @@ describe('Apollo Angular', () => {
       )) as Types.ComplexPluginOutput;
 
       // NgModule
-      expect(content.prepend).toContain(`import * as ApolloCore from 'apollo-client';`);
+      expect(content.prepend).toContain(`import * as ApolloCore from '@apollo/client/core';`);
       expect(content.content).toBeSimilarStringTo(`
         @Injectable({ providedIn: 'root' })
         export class ApolloAngularSDK {
@@ -407,7 +427,7 @@ describe('Apollo Angular', () => {
       )) as Types.ComplexPluginOutput;
 
       // NgModule
-      expect(content.prepend).toContain(`import * as ApolloCore from 'apollo-client';`);
+      expect(content.prepend).toContain(`import * as ApolloCore from '@apollo/client/core';`);
       // console.log('content.content', content.content);
       expect(content.content).toBeSimilarStringTo(`
         @Injectable()
@@ -426,6 +446,62 @@ describe('Apollo Angular', () => {
         }
       `);
       await validateTypeScript(content, modifiedSchema, docs, {});
+    });
+
+    it('should generate a SDK service for Apollo Angular 1.0 on demand', async () => {
+      const modifiedSchema = extendSchema(schema, addToSchema);
+      const myFeed = gql(`
+        query MyFeed {
+          feed {
+            id
+          }
+        }
+      `);
+      const docs = [{ location: '', document: myFeed }];
+      const content = (await plugin(
+        modifiedSchema,
+        docs,
+        {
+          sdkClass: true,
+          apolloAngularVersion: 1,
+        },
+        {
+          outputFile: 'graphql.ts',
+        }
+      )) as Types.ComplexPluginOutput;
+
+      expect(content.prepend).toContain(`import * as ApolloCore from 'apollo-client';`);
+    });
+
+    it('should generate a SDK service with a requested providedIn value', async () => {
+      const modifiedSchema = extendSchema(schema, addToSchema);
+      const myFeed = gql(`
+        query MyFeed {
+          feed {
+            id
+          }
+        }
+      `);
+      const docs = [{ location: '', document: myFeed }];
+      const content = (await plugin(
+        modifiedSchema,
+        docs,
+        {
+          sdkClass: true,
+          serviceProvidedIn: '../app.module#AppModule',
+        },
+        {
+          outputFile: 'graphql.ts',
+        }
+      )) as Types.ComplexPluginOutput;
+
+      // NgModule import
+      expect(content.prepend).toContain(`import { AppModule } from '../app.module';`);
+      // NgModule in `providedIn`
+      expect(content.content).toBeSimilarStringTo(`
+        @Injectable({ providedIn: AppModule })
+        export class ApolloAngularSDK {
+      `);
     });
   });
 

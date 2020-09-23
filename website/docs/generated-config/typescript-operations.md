@@ -5,10 +5,14 @@ Note: In most configurations, this plugin requires you to use `typescript as wel
 
 ## Installation
 
+
+
+<img alt="typescript-operations plugin version" src="https://img.shields.io/npm/v/@graphql-codegen/typescript-operations?color=%23e15799&label=plugin&nbsp;version&style=for-the-badge"/>
+
+
+    
 :::shell Using `yarn`
-
-    $ yarn add -D @graphql-codegen/typescript-operations
-
+    yarn add -D @graphql-codegen/typescript-operations
 :::
 
 ## API Reference
@@ -109,6 +113,16 @@ path/to/file.ts:
 
 type: `boolean`
 
+
+
+### `addOperationExport`
+
+type: `boolean`
+default: `false`
+
+Add const export of the operation name to output file. Pay attention that the file should be `d.ts`.
+You can combine it with `near-operation-file preset` and therefore the types will be generated along with graphql file. Then you need to set extension in `presetConfig` to be `.gql.d.ts` and by that you can import `gql` file in `ts` files.
+It will allow you to get everything with one import: ```import { GetClient, GetClientQuery, GetClientQueryVariables, } from "./GetClient.gql";```.
 
 
 ### `preResolveTypes`
@@ -386,6 +400,20 @@ config:
   typesPrefix: I
 ```
 
+### `typesSuffix`
+
+type: `string`
+default: ``
+
+Suffixes all the generated types.
+
+#### Usage Examples
+
+```yml
+config:
+  typesSuffix: I
+```
+
 ### `skipTypename`
 
 type: `boolean`
@@ -414,3 +442,11 @@ in the selection set, and makes it non-optional
 config:
   nonOptionalTypename: true
 ```
+
+### `useTypeImports`
+
+type: `boolean`
+default: `false`
+
+Will use `import type {}` rather than `import {}` when importing only types. This gives
+compatibility with TypeScript's "importsNotUsedAsValues": "error" option

@@ -1,9 +1,9 @@
-import gql from 'graphql-tag';
+import { gql } from 'apollo-angular';
 import { Injectable } from '@angular/core';
 import * as Apollo from 'apollo-angular';
-import * as ApolloCore from 'apollo-client';
+import * as ApolloCore from '@apollo/client/core';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -341,6 +341,10 @@ export class OnCommentAddedGQL extends Apollo.Subscription<
   OnCommentAddedSubscriptionVariables
 > {
   document = OnCommentAddedDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 export const CommentDocument = gql`
   query Comment($repoFullName: String!, $limit: Int, $offset: Int) {
@@ -378,6 +382,10 @@ export const CommentDocument = gql`
 })
 export class CommentGQL extends Apollo.Query<CommentQuery, CommentQueryVariables> {
   document = CommentDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 export const CurrentUserForProfileDocument = gql`
   query CurrentUserForProfile {
@@ -396,6 +404,10 @@ export class CurrentUserForProfileGQL extends Apollo.Query<
   CurrentUserForProfileQueryVariables
 > {
   document = CurrentUserForProfileDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 export const FeedDocument = gql`
   query Feed($type: FeedType!, $offset: Int, $limit: Int) {
@@ -414,6 +426,10 @@ export const FeedDocument = gql`
 })
 export class FeedGQL extends Apollo.Query<FeedQuery, FeedQueryVariables> {
   document = FeedDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 export const SubmitRepositoryDocument = gql`
   mutation submitRepository($repoFullName: String!) {
@@ -428,6 +444,10 @@ export const SubmitRepositoryDocument = gql`
 })
 export class SubmitRepositoryGQL extends Apollo.Mutation<SubmitRepositoryMutation, SubmitRepositoryMutationVariables> {
   document = SubmitRepositoryDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 export const SubmitCommentDocument = gql`
   mutation submitComment($repoFullName: String!, $commentContent: String!) {
@@ -443,6 +463,10 @@ export const SubmitCommentDocument = gql`
 })
 export class SubmitCommentGQL extends Apollo.Mutation<SubmitCommentMutation, SubmitCommentMutationVariables> {
   document = SubmitCommentDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 export const VoteDocument = gql`
   mutation vote($repoFullName: String!, $type: VoteType!) {
@@ -461,6 +485,10 @@ export const VoteDocument = gql`
 })
 export class VoteGQL extends Apollo.Mutation<VoteMutation, VoteMutationVariables> {
   document = VoteDocument;
+
+  constructor(apollo: Apollo.Apollo) {
+    super(apollo);
+  }
 }
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;

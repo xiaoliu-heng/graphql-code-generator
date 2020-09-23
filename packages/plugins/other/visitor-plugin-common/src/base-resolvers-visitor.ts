@@ -198,7 +198,8 @@ export interface RawResolversConfig extends RawConfig {
    *  plugins:
    *    - "typescript"
    *    - "typescript-resolvers"
-   *    - add: "import { DeepPartial } from 'utility-types';"
+   *    - add:
+   *        content: "import { DeepPartial } from 'utility-types';"
    *  config:
    *    defaultMapper: DeepPartial<{T}>
    * ```
@@ -467,6 +468,9 @@ export class BaseResolversVisitor<
         prev[typeName] = applyWrapper(this.config.rootValueType.type);
 
         return prev;
+      } else if (isMapped && this.config.mappers[typeName].type) {
+        this.markMapperAsUsed(typeName);
+        prev[typeName] = applyWrapper(this.config.mappers[typeName].type);
       } else if (isInterfaceType(schemaType)) {
         const allTypesMap = this._schema.getTypeMap();
         const implementingTypes: string[] = [];
@@ -489,9 +493,6 @@ export class BaseResolversVisitor<
         prev[typeName] =
           this.config.enumValues[typeName].sourceIdentifier ||
           this.convertName(this.config.enumValues[typeName].typeIdentifier);
-      } else if (isMapped && this.config.mappers[typeName].type) {
-        this.markMapperAsUsed(typeName);
-        prev[typeName] = applyWrapper(this.config.mappers[typeName].type);
       } else if (hasDefaultMapper && !hasPlaceholder(this.config.defaultMapper.type)) {
         prev[typeName] = applyWrapper(this.config.defaultMapper.type);
       } else if (isScalar) {
@@ -729,7 +730,19 @@ export class BaseResolversVisitor<
     }
 
     const defaultType = types.find(t => t.asDefault === true);
-    const namedTypes = types.filter(t => !t.asDefault);
+    let namedTypes = types.filter(t => !t.asDefault);
+
+    if (this.config.useTypeImports) {
+      if (defaultType) {
+        // default as Baz
+        namedTypes = [{ identifier: `default as ${defaultType.identifier}` }, ...namedTypes];
+      }
+      // { Foo, Bar as BarModel }
+      const namedImports = namedTypes.length ? `{ ${namedTypes.map(t => t.identifier).join(', ')} }` : '';
+
+      // { default as Baz, Foo, Bar as BarModel }
+      return `import type ${[namedImports].filter(Boolean).join(', ')} from '${source}';`;
+    }
 
     // { Foo, Bar as BarModel }
     const namedImports = namedTypes.length ? `{ ${namedTypes.map(t => t.identifier).join(', ')} }` : '';
@@ -911,12 +924,14 @@ export type IDirectiveResolvers${contextType} = ${name}<ContextType>;`
             parentName,
             {
               useTypesPrefix: true,
+              useTypesSuffix: true,
             },
             true
           ) +
             (this.config.addUnderscoreToArgsType ? '_' : '') +
             this.convertName(node.name, {
               useTypesPrefix: false,
+              useTypesSuffix: false,
             }) +
             'Args'}`
         : null;

@@ -1,9 +1,13 @@
 ## Installation
 
+
+
+<img alt="typescript-mongodb plugin version" src="https://img.shields.io/npm/v/@graphql-codegen/typescript-mongodb?color=%23e15799&label=plugin&nbsp;version&style=for-the-badge"/>
+
+
+    
 :::shell Using `yarn`
-
-    $ yarn add -D @graphql-codegen/typescript-mongodb
-
+    yarn add -D @graphql-codegen/typescript-mongodb
 :::
 
 ## API Reference
@@ -171,6 +175,20 @@ config:
   typesPrefix: I
 ```
 
+### `typesSuffix`
+
+type: `string`
+default: ``
+
+Suffixes all the generated types.
+
+#### Usage Examples
+
+```yml
+config:
+  typesSuffix: I
+```
+
 ### `skipTypename`
 
 type: `boolean`
@@ -199,3 +217,11 @@ in the selection set, and makes it non-optional
 config:
   nonOptionalTypename: true
 ```
+
+### `useTypeImports`
+
+type: `boolean`
+default: `false`
+
+Will use `import type {}` rather than `import {}` when importing only types. This gives
+compatibility with TypeScript's "importsNotUsedAsValues": "error" option

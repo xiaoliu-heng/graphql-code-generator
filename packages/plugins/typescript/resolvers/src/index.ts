@@ -73,6 +73,13 @@ export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
       context: TContext,
       info${optionalSignForInfoArg}: GraphQLResolveInfo
     ) => Promise<TResult> | TResult;`);
+
+    defsToInclude.push(`
+      type ScalarCheck<T, S> = S extends true ? T : NullableCheck<T, S>;
+      type NullableCheck<T, S> = Maybe<T> extends T ? Maybe<ListCheck<NonNullable<T>, S>> : ListCheck<T, S>;
+      type ListCheck<T, S> = T extends (infer U)[] ? NullableCheck<U, S>[] : GraphQLRecursivePick<T, S>;
+      export type GraphQLRecursivePick<T, S> = { [K in keyof T & keyof S]: ScalarCheck<T[K], S[K]> };
+    `);
   }
 
   if (noSchemaStitching) {
@@ -95,19 +102,21 @@ export type NewStitchingResolver<TResult, TParent, TContext, TArgs> = {
     );
   }
 
+  const importType = config.useTypeImports ? 'import type' : 'import';
+
   if (config.customResolverFn) {
     const parsedMapper = parseMapper(config.customResolverFn);
     if (parsedMapper.isExternal) {
       if (parsedMapper.default) {
-        prepend.push(`import ResolverFn from '${parsedMapper.source}';`);
+        prepend.push(`${importType} ResolverFn from '${parsedMapper.source}';`);
       } else {
         prepend.push(
-          `import { ${parsedMapper.import} ${parsedMapper.import !== 'ResolverFn' ? 'as ResolverFn ' : ''}} from '${
-            parsedMapper.source
-          }';`
+          `${importType} { ${parsedMapper.import} ${
+            parsedMapper.import !== 'ResolverFn' ? 'as ResolverFn ' : ''
+          }} from '${parsedMapper.source}';`
         );
       }
-      prepend.push(`export { ResolverFn };`);
+      prepend.push(`export${config.useTypeImports ? ' type' : ''} { ResolverFn };`);
     } else {
       prepend.push(`export type ResolverFn<TResult, TParent, TContext, TArgs> = ${parsedMapper.type}`);
     }
@@ -194,7 +203,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
   }
 
   if (imports.length) {
-    prepend.push(`import { ${imports.join(', ')} } from 'graphql';`);
+    prepend.push(`${importType} { ${imports.join(', ')} } from 'graphql';`);
   }
 
   if (config.customResolveInfo) {

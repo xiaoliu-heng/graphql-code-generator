@@ -18,6 +18,7 @@ import {
   isEnumType,
   DirectiveNode,
   Kind,
+  GraphQLEnumType,
 } from 'graphql';
 import flatMap from 'array.prototype.flatmap';
 import { BaseVisitor, ParsedConfig, RawConfig } from './base-visitor';
@@ -408,10 +409,14 @@ export class BaseTypesVisitor<
   }
 
   protected _buildTypeImport(identifier: string, source: string, asDefault = false): string {
+    const { useTypeImports } = this.config;
     if (asDefault) {
+      if (useTypeImports) {
+        return `import type { default as ${identifier} } from '${source}';`;
+      }
       return `import ${identifier} from '${source}';`;
     }
-    return `import { ${identifier} } from '${source}';`;
+    return `import${useTypeImports ? ' type' : ''} { ${identifier} } from '${source}';`;
   }
 
   protected handleEnumValueMapper(
@@ -472,11 +477,17 @@ export class BaseTypesVisitor<
   }
 
   protected buildEnumValuesBlock(typeName: string, values: ReadonlyArray<EnumValueDefinitionNode>): string {
+    const schemaEnumType: GraphQLEnumType | undefined = this._schema
+      ? (this._schema.getType(typeName) as GraphQLEnumType)
+      : undefined;
+
     return values
       .map(enumOption => {
         const optionName = this.convertName(enumOption, { useTypesPrefix: false, transformUnderscore: true });
         const comment = transformComment((enumOption.description as any) as string, 1);
-        let enumValue: string | number = enumOption.name as any;
+        const schemaEnumValue = schemaEnumType ? schemaEnumType.getValue(enumOption.name as any).value : undefined;
+        let enumValue: string | number =
+          typeof schemaEnumValue !== 'undefined' ? schemaEnumValue : (enumOption.name as any);
 
         if (
           this.config.enumValues[typeName] &&
@@ -489,7 +500,10 @@ export class BaseTypesVisitor<
         return (
           comment +
           indent(
-            `${optionName}${this._declarationBlockConfig.enumNameValueSeparator} ${wrapWithSingleQuotes(enumValue)}`
+            `${optionName}${this._declarationBlockConfig.enumNameValueSeparator} ${wrapWithSingleQuotes(
+              enumValue,
+              typeof schemaEnumValue !== 'undefined'
+            )}`
           )
         );
       })
@@ -530,6 +544,7 @@ export class BaseTypesVisitor<
           (this.config.addUnderscoreToArgsType ? '_' : '') +
           this.convertName(field, {
             useTypesPrefix: false,
+            useTypesSuffix: false,
           }) +
           'Args';
 

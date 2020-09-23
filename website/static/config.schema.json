@@ -49,10 +49,7 @@
               }
             },
             {
-              "type": [
-                "string",
-                "boolean"
-              ]
+              "type": ["string", "boolean"]
             }
           ]
         },
@@ -63,6 +60,11 @@
         "pluginLoader": {
           "$ref": "#/definitions/Types.PackageLoaderFn",
           "description": "If you are using the programmatic API in a browser environment, you can override this configuration to load your plugins in a way different than require."
+        },
+        "pluginContext": {
+          "description": "Additional context passed to plugins",
+          "type": "object",
+          "additionalProperties": {}
         },
         "pluckConfig": {
           "description": "Allows you to override the configuration for `@graphql-tools/graphql-tag-pluck`, the tool that extracts your GraphQL operations from your code files.\n\nFor more details: https://graphql-code-generator.com/docs/getting-started/documents-field#graphql-tag-pluck",
@@ -85,6 +87,46 @@
         "hooks": {
           "$ref": "#/definitions/Types.LifecycleHooksDefinition",
           "description": "Specifies scripts to run when events are happening in the codegen core.\nHooks defined on that level will effect all output files.\n\nFor more details: https://graphql-code-generator.com/docs/getting-started/lifecycle-hooks"
+        }
+      }
+    },
+    "AddPluginConfig": {
+      "type": "object",
+      "properties": {
+        "placement": {
+          "default": "prepend",
+          "description": "Allow you to choose where to add the content.",
+          "enum": ["append", "content", "prepend"],
+          "type": "string"
+        },
+        "content": {
+          "description": "The actual content you wish to add, either a string or array of strings.\nYou can also specify a path to a local file and the content if it will be loaded by codegen.",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    "TimePluginConfig": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "description": "Customize the Moment format of the output time.",
+          "default": "YYYY-MM-DDTHH:mm:ssZ",
+          "type": "string"
+        },
+        "message": {
+          "description": "Customize the comment message",
+          "default": "'Generated on'",
+          "type": "string"
         }
       }
     },
@@ -164,12 +206,7 @@
               "$ref": "#/definitions/DeclarationKindConfig"
             },
             {
-              "enum": [
-                "abstract class",
-                "class",
-                "interface",
-                "type"
-              ],
+              "enum": ["abstract class", "class", "interface", "type"],
               "type": "string"
             }
           ]
@@ -203,6 +240,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -212,6 +254,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -248,6 +295,11 @@
         },
         "globalNamespace": {
           "type": "boolean"
+        },
+        "addOperationExport": {
+          "type": "boolean",
+          "description": "Add const export of the operation name to output file. Pay attention that the file should be `d.ts`.\nYou can combine it with `near-operation-file preset` and therefore the types will be generated along with graphql file. Then you need to set extension in `presetConfig` to be `.gql.d.ts` and by that you can import `gql` file in `ts` files.\nIt will allow you to get everything with one import: ```import { GetClient, GetClientQuery, GetClientQueryVariables, } from \"./GetClient.gql\";```.",
+          "default": false
         },
         "preResolveTypes": {
           "default": false,
@@ -294,12 +346,7 @@
               "$ref": "#/definitions/DeclarationKindConfig"
             },
             {
-              "enum": [
-                "abstract class",
-                "class",
-                "interface",
-                "type"
-              ],
+              "enum": ["abstract class", "class", "interface", "type"],
               "type": "string"
             }
           ]
@@ -338,6 +385,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -347,6 +399,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -387,6 +444,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -396,6 +458,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -433,8 +500,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -492,6 +564,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -506,6 +583,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -515,6 +597,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -615,12 +702,7 @@
               "$ref": "#/definitions/DeclarationKindConfig"
             },
             {
-              "enum": [
-                "abstract class",
-                "class",
-                "interface",
-                "type"
-              ],
+              "enum": ["abstract class", "class", "interface", "type"],
               "type": "string"
             }
           ]
@@ -654,6 +736,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -663,6 +750,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -712,8 +804,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -771,6 +868,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -785,6 +887,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -794,6 +901,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -830,6 +942,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -839,6 +956,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -889,6 +1011,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -898,6 +1025,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1037,6 +1169,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1046,6 +1183,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1053,6 +1195,11 @@
       "description": "This plugin generates Apollo services (`Query`, `Mutation` and `Subscription`) with TypeScript typings.\n\nIt will generate a strongly typed Angular service for every defined query, mutation or subscription. The generated Angular services are ready to inject and use within your Angular component.\n\nIt extends the basic TypeScript plugins: `@graphql-codegen/typescript`, `@graphql-codegen/typescript-operations` - and thus shares a similar configuration.\n\nTo shed some more light regards this template, it's recommended to go through the this article: http://apollographql.com/docs/angular/basics/services.html , and to read the Code Generation with Apollo Angular: https://the-guild.dev/blog/apollo-angular-12",
       "type": "object",
       "properties": {
+        "apolloAngularVersion": {
+          "description": "Version of `apollo-angular` package",
+          "default": 2,
+          "type": "number"
+        },
         "ngModule": {
           "description": "Allows to define `ngModule` as part of the plugin's config so it's globally available.",
           "type": "string"
@@ -1068,6 +1215,10 @@
         "serviceProvidedInRoot": {
           "description": "Defined the global value of `serviceProvidedInRoot`.",
           "type": "boolean"
+        },
+        "serviceProvidedIn": {
+          "description": "Define the Injector of the SDK class.",
+          "type": "string"
         },
         "sdkClass": {
           "description": "Set to `true` in order to generate a SDK service class that uses all generated services.",
@@ -1100,8 +1251,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -1159,6 +1315,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -1173,6 +1334,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1182,6 +1348,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1191,12 +1362,12 @@
       "properties": {
         "withComponent": {
           "description": "Customized the output by enabling/disabling the generated Component.",
-          "default": true,
+          "default": false,
           "type": "boolean"
         },
         "withHooks": {
           "description": "Customized the output by enabling/disabling the generated React Hooks.",
-          "default": false,
+          "default": true,
           "type": "boolean"
         },
         "urqlImportFrom": {
@@ -1210,8 +1381,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -1269,6 +1445,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -1283,6 +1464,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1292,6 +1478,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1300,18 +1491,18 @@
       "type": "object",
       "properties": {
         "withComponent": {
-          "description": "Customized the output by enabling/disabling the generated Component.",
-          "default": true,
+          "description": "Customize the output by enabling/disabling the generated Component (deprecated since Apollo-Client v3). For more details: https://www.apollographql.com/docs/react/api/react/components/",
+          "default": false,
           "type": "boolean"
         },
         "withHOC": {
-          "description": "Customized the output by enabling/disabling the HOC.",
-          "default": true,
+          "description": "Customize the output by enabling/disabling the HOC (deprecated since Apollo-Client v3). For more details: https://www.apollographql.com/docs/react/api/react/hoc/",
+          "default": false,
           "type": "boolean"
         },
         "withHooks": {
-          "description": "Customized the output by enabling/disabling the generated React Hooks.",
-          "default": false,
+          "description": "Customized the output by enabling/disabling the generated React Hooks. For more details: https://www.apollographql.com/docs/react/api/react/hooks/",
+          "default": true,
           "type": "boolean"
         },
         "withMutationFn": {
@@ -1350,12 +1541,9 @@
           "type": "string"
         },
         "reactApolloVersion": {
-          "description": "Sets the version of react-apollo.",
-          "default": 2,
-          "enum": [
-            2,
-            3
-          ],
+          "description": "Sets the version of react-apollo.\nIf you are using the old (deprecated) package of `react-apollo`, please set this configuration to `2`.\nIf you are using Apollo-Client v3, please set this to `3`.",
+          "default": 3,
+          "enum": [2, 3],
           "type": "number"
         },
         "withResultType": {
@@ -1379,8 +1567,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -1438,6 +1631,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -1452,6 +1650,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1461,6 +1664,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1488,8 +1696,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -1547,6 +1760,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -1561,6 +1779,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1570,6 +1793,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1588,8 +1816,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -1647,6 +1880,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -1661,6 +1899,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1670,6 +1913,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1708,8 +1956,13 @@
           "type": "boolean"
         },
         "gqlImport": {
-          "default": "gql#graphql-tag",
+          "default": "graphql-tag#gql",
           "description": "Customize from which module will `gql` be imported from.\nThis is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.",
+          "type": "string"
+        },
+        "documentNodeImport": {
+          "default": "graphql#DocumentNode",
+          "description": "Customize from which module will `DocumentNode` be imported from.\nThis is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.",
           "type": "string"
         },
         "noExport": {
@@ -1767,6 +2020,11 @@
           "description": "This config should be used if `documentMode` is `external`. This has 2 usage:\n- any string: This would be the path to import document nodes from. This can be used if we want to manually create the document nodes e.g. Use `graphql-tag` in a separate file and export the generated document\n- 'near-operation-file': This is a special mode that is intended to be used with `near-operation-file` preset to import document nodes from those files. If these files are `.graphql` files, we make use of webpack loader.",
           "type": "string"
         },
+        "pureMagicComment": {
+          "default": false,
+          "description": "This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.",
+          "type": "boolean"
+        },
         "scalars": {
           "$ref": "#/definitions/ScalarsMap",
           "description": "Extends or overrides the built-in scalars and custom GraphQL scalars to a custom type."
@@ -1774,6 +2032,11 @@
         "typesPrefix": {
           "default": "",
           "description": "Prefixes all the generated types.",
+          "type": "string"
+        },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
           "type": "string"
         },
         "skipTypename": {
@@ -1785,6 +2048,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1821,6 +2089,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1830,6 +2103,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1876,6 +2154,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1885,6 +2168,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1923,6 +2211,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -1932,6 +2225,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -1964,12 +2262,7 @@
               "$ref": "#/definitions/DeclarationKindConfig"
             },
             {
-              "enum": [
-                "abstract class",
-                "class",
-                "interface",
-                "type"
-              ],
+              "enum": ["abstract class", "class", "interface", "type"],
               "type": "string"
             }
           ]
@@ -2008,6 +2301,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -2017,6 +2315,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -2123,6 +2426,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -2132,6 +2440,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -2204,12 +2517,7 @@
               "$ref": "#/definitions/DeclarationKindConfig"
             },
             {
-              "enum": [
-                "abstract class",
-                "class",
-                "interface",
-                "type"
-              ],
+              "enum": ["abstract class", "class", "interface", "type"],
               "type": "string"
             }
           ]
@@ -2248,6 +2556,11 @@
           "description": "Prefixes all the generated types.",
           "type": "string"
         },
+        "typesSuffix": {
+          "default": "",
+          "description": "Suffixes all the generated types.",
+          "type": "string"
+        },
         "skipTypename": {
           "default": false,
           "description": "Does not add __typename to the generated types, unless it was specified in the selection set.",
@@ -2257,6 +2570,11 @@
           "default": false,
           "description": "Automatically adds `__typename` field to the generated types, even when they are not specified\nin the selection set, and makes it non-optional",
           "type": "boolean"
+        },
+        "useTypeImports": {
+          "type": "boolean",
+          "default": false,
+          "description": "Will use `import type {}` rather than `import {}` when importing only types. This gives\ncompatibility with TypeScript's \"importsNotUsedAsValues\": \"error\" option"
         }
       }
     },
@@ -2281,19 +2599,13 @@
         "module": {
           "description": "Compatible only with JSON extension, allow you to choose the export type, either `module.exports` or `export default`.  Allowed values are: `commonjs`,  `es2015`.",
           "default": "es2015",
-          "enum": [
-            "commonjs",
-            "es2015"
-          ],
+          "enum": ["commonjs", "es2015"],
           "type": "string"
         },
         "apolloClientVersion": {
           "description": "Compatible only with TS/TSX/JS/JSX extensions, allow you to generate output based on your Apollo-Client version. Valid values are: `2`, `3`.",
           "default": 2,
-          "enum": [
-            2,
-            3
-          ],
+          "enum": [2, 3],
           "type": "number"
         },
         "useExplicitTyping": {
@@ -2318,6 +2630,9 @@
           "$ref": "#/definitions/Types.UrlSchemaWithOptions"
         },
         {
+          "$ref": "#/definitions/Types.LocalSchemaPathWithOptions"
+        },
+        {
           "type": "array",
           "items": {
             "anyOf": [
@@ -2329,6 +2644,9 @@
               },
               {
                 "$ref": "#/definitions/Types.UrlSchemaWithOptions"
+              },
+              {
+                "$ref": "#/definitions/Types.LocalSchemaPathWithOptions"
               },
               {
                 "type": "string"
@@ -2408,6 +2726,54 @@
         "method": {
           "description": "HTTP Method to use, either POST (default) or GET.",
           "type": "string"
+        }
+      }
+    },
+    "Types.LocalSchemaPathWithOptions": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/Types.LocalSchemaPathOptions"
+      }
+    },
+    "Types.LocalSchemaPathOptions": {
+      "additionalProperties": false,
+      "description": "Loads a schema a local file or files, with customized options for parsing/loading.",
+      "type": "object",
+      "properties": {
+        "skipGraphQLImport": {
+          "description": "Skips checks for graphql-import syntax and loads the file as-is, without imports support.",
+          "default": true,
+          "type": "boolean"
+        },
+        "commentDescriptions": {
+          "description": "Converts all GraphQL comments (`#` sign) to descriptions during the parse phase, to make it available\nfor plugins later.",
+          "default": false,
+          "type": "boolean"
+        },
+        "assumeValidSDL": {
+          "description": "Set to true to assume the SDL is valid.",
+          "default": false,
+          "type": "boolean"
+        },
+        "noLocation": {
+          "description": "By default, the parser creates AST nodes that know the location\nin the source that they correspond to. This configuration flag\ndisables that behavior for performance or testing.",
+          "default": false,
+          "type": "boolean"
+        },
+        "allowLegacySDLEmptyFields": {
+          "description": "If enabled, the parser will parse empty fields sets in the Schema\nDefinition Language. Otherwise, the parser will follow the current\nspecification.\n\nThis option is provided to ease adoption of the final SDL specification\nand will be removed in v16.",
+          "default": false,
+          "type": "boolean"
+        },
+        "allowLegacySDLImplementsInterfaces": {
+          "description": "If enabled, the parser will parse implemented interfaces with no `&`\ncharacter between each interface. Otherwise, the parser will follow the\ncurrent specification.\n\nThis option is provided to ease adoption of the final SDL specification\nand will be removed in v16.",
+          "default": false,
+          "type": "boolean"
+        },
+        "experimentalFragmentVariables": {
+          "description": "EXPERIMENTAL:\n\nIf enabled, the parser will understand and parse variable definitions\ncontained in a fragment definition. They'll be represented in the\n`variableDefinitions` field of the FragmentDefinitionNode.\n\nThe syntax is identical to normal, query-defined variables. For example:\n\n   fragment A($var: Boolean = false) on T  {\n     ...\n   }\n\nNote: this feature is experimental and may change or be removed in the\nfuture.",
+          "default": false,
+          "type": "boolean"
         }
       }
     },
@@ -2529,6 +2895,44 @@
         }
       },
       "allOf": [
+        {
+          "if": {
+            "properties": {
+              "plugins": {
+                "contains": {
+                  "type": "string",
+                  "const": "add"
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "config": {
+                "$ref": "#/definitions/AddPluginConfig"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "plugins": {
+                "contains": {
+                  "type": "string",
+                  "const": "time"
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "config": {
+                "$ref": "#/definitions/TimePluginConfig"
+              }
+            }
+          }
+        },
         {
           "if": {
             "properties": {
@@ -3086,17 +3490,11 @@
         {
           "type": "array",
           "items": {
-            "type": [
-              "string",
-              "object"
-            ]
+            "type": ["string", "object"]
           }
         },
         {
-          "type": [
-            "string",
-            "object"
-          ]
+          "type": ["string", "object"]
         }
       ]
     },
@@ -3151,10 +3549,7 @@
                   {
                     "type": "object",
                     "additionalProperties": {
-                      "type": [
-                        "string",
-                        "number"
-                      ]
+                      "type": ["string", "number"]
                     }
                   },
                   {
@@ -3197,12 +3592,7 @@
       }
     },
     "DeclarationKind": {
-      "enum": [
-        "abstract class",
-        "class",
-        "interface",
-        "type"
-      ],
+      "enum": ["abstract class", "class", "interface", "type"],
       "type": "string"
     },
     "ScalarsMap": {
@@ -3225,10 +3615,7 @@
           "$ref": "#/definitions/NamingConventionMap"
         },
         {
-          "type": [
-            "string",
-            "object"
-          ]
+          "type": ["string", "object"]
         }
       ]
     },
@@ -3237,16 +3624,10 @@
       "type": "object",
       "properties": {
         "enumValues": {
-          "type": [
-            "string",
-            "object"
-          ]
+          "type": ["string", "object"]
         },
         "typeNames": {
-          "type": [
-            "string",
-            "object"
-          ]
+          "type": ["string", "object"]
         },
         "transformUnderscore": {
           "type": "boolean"
@@ -3258,9 +3639,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "FragmentDefinition"
-          ]
+          "enum": ["FragmentDefinition"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3404,9 +3783,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "Name"
-          ]
+          "enum": ["Name"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3427,9 +3804,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "VariableDefinition"
-          ]
+          "enum": ["VariableDefinition"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3453,9 +3828,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "Variable"
-          ]
+          "enum": ["Variable"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3483,9 +3856,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "NamedType"
-          ]
+          "enum": ["NamedType"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3500,9 +3871,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "ListType"
-          ]
+          "enum": ["ListType"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3517,9 +3886,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "NonNullType"
-          ]
+          "enum": ["NonNullType"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3572,9 +3939,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "IntValue"
-          ]
+          "enum": ["IntValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3589,9 +3954,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "FloatValue"
-          ]
+          "enum": ["FloatValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3606,9 +3969,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "StringValue"
-          ]
+          "enum": ["StringValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3626,9 +3987,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "BooleanValue"
-          ]
+          "enum": ["BooleanValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3643,9 +4002,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "NullValue"
-          ]
+          "enum": ["NullValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3657,9 +4014,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "EnumValue"
-          ]
+          "enum": ["EnumValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3674,9 +4029,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "ListValue"
-          ]
+          "enum": ["ListValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3725,9 +4078,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "ObjectValue"
-          ]
+          "enum": ["ObjectValue"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3748,9 +4099,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "ObjectField"
-          ]
+          "enum": ["ObjectField"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3774,9 +4123,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "Directive"
-          ]
+          "enum": ["Directive"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3800,9 +4147,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "Argument"
-          ]
+          "enum": ["Argument"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3820,9 +4165,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "SelectionSet"
-          ]
+          "enum": ["SelectionSet"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3853,9 +4196,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "Field"
-          ]
+          "enum": ["Field"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3882,9 +4223,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "FragmentSpread"
-          ]
+          "enum": ["FragmentSpread"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3902,9 +4241,7 @@
       "properties": {
         "kind": {
           "type": "string",
-          "enum": [
-            "InlineFragment"
-          ]
+          "enum": ["InlineFragment"]
         },
         "loc": {
           "$ref": "#/definitions/Location"
@@ -3941,10 +4278,7 @@
                 "type": "string"
               },
               "kind": {
-                "enum": [
-                  "document",
-                  "type"
-                ],
+                "enum": ["document", "type"],
                 "type": "string"
               }
             }
@@ -3956,13 +4290,7 @@
       "$ref": "#/definitions/__type_3"
     },
     "DocumentMode": {
-      "enum": [
-        "documentNode",
-        "documentNodeImportFragments",
-        "external",
-        "graphQLTag",
-        "string"
-      ],
+      "enum": ["documentNode", "documentNodeImportFragments", "external", "graphQLTag", "string"],
       "type": "string"
     },
     "__type_4": {
@@ -3995,19 +4323,11 @@
       }
     },
     "StencilComponentType": {
-      "enum": [
-        "class",
-        "functional"
-      ],
+      "enum": ["class", "functional"],
       "type": "string"
     },
     "FileType": {
-      "enum": [
-        0,
-        1,
-        2,
-        3
-      ],
+      "enum": [0, 1, 2, 3],
       "type": "number"
     },
     "GeneratedPluginsMap": {
@@ -4016,6 +4336,22 @@
           "type": "object",
           "additionalProperties": true,
           "properties": {
+            "add": {
+              "additionalProperties": false,
+              "$ref": "#/definitions/AddPluginConfig"
+            },
+            "@graphql-codegen/add": {
+              "additionalProperties": false,
+              "$ref": "#/definitions/AddPluginConfig"
+            },
+            "time": {
+              "additionalProperties": false,
+              "$ref": "#/definitions/TimePluginConfig"
+            },
+            "@graphql-codegen/time": {
+              "additionalProperties": false,
+              "$ref": "#/definitions/TimePluginConfig"
+            },
             "typescript": {
               "additionalProperties": false,
               "$ref": "#/definitions/TypeScriptPluginConfig"
@@ -4237,6 +4573,22 @@
         {
           "type": "string",
           "oneOf": [
+            {
+              "const": "add",
+              "description": "\n\nFor more details and documentation: https://graphql-code-generator.com/docs/plugins/add\n\n=> Make sure to include \"@graphql-codegen/add\" in your package.json file and install your dependencies.\n\n"
+            },
+            {
+              "const": "@graphql-codegen/add",
+              "description": "\n\nFor more details and documentation: https://graphql-code-generator.com/docs/plugins/add\n\n=> Make sure to include \"@graphql-codegen/add\" in your package.json file and install your dependencies.\n\n"
+            },
+            {
+              "const": "time",
+              "description": "\n\nFor more details and documentation: https://graphql-code-generator.com/docs/plugins/time\n\n=> Make sure to include \"@graphql-codegen/time\" in your package.json file and install your dependencies.\n\n"
+            },
+            {
+              "const": "@graphql-codegen/time",
+              "description": "\n\nFor more details and documentation: https://graphql-code-generator.com/docs/plugins/time\n\n=> Make sure to include \"@graphql-codegen/time\" in your package.json file and install your dependencies.\n\n"
+            },
             {
               "const": "typescript",
               "description": "This plugin generates the base TypeScript types, based on your GraphQL schema.\n\nThe types generated by this plugin are simple, and refers to the exact structure of your schema, and it's used as the base types for other plugins (such as `typescript-operations` / `typescript-resolvers`)\n\nFor more details and documentation: https://graphql-code-generator.com/docs/plugins/typescript\n\n=> Make sure to include \"@graphql-codegen/typescript\" in your package.json file and install your dependencies.\n\n"

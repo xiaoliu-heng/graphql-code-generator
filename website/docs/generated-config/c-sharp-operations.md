@@ -2,10 +2,14 @@ This plugin generates C# `class` based on your GraphQL operations.
 
 ## Installation
 
+
+
+<img alt="c-sharp-operations plugin version" src="https://img.shields.io/npm/v/@graphql-codegen/c-sharp-operations?color=%23e15799&label=plugin&nbsp;version&style=for-the-badge"/>
+
+
+    
 :::shell Using `yarn`
-
-    $ yarn add -D @graphql-codegen/c-sharp-operations
-
+    yarn add -D @graphql-codegen/c-sharp-operations
 :::
 
 ## API Reference
@@ -90,7 +94,7 @@ Deprecated. Changes the documentMode to `documentNode`.
 ### `gqlImport`
 
 type: `string`
-default: `gql#graphql-tag`
+default: `graphql-tag#gql`
 
 Customize from which module will `gql` be imported from.
 This is useful if you want to use modules other than `graphql-tag`, e.g. `graphql.macro`.
@@ -108,6 +112,15 @@ config:
 config:
   gqlImport: gatsby#graphql
 ```
+
+### `documentNodeImport`
+
+type: `string`
+default: `graphql#DocumentNode`
+
+Customize from which module will `DocumentNode` be imported from.
+This is useful if you want to use modules other than `graphql`, e.g. `@graphql-typed-document-node`.
+
 
 ### `noExport`
 
@@ -217,6 +230,14 @@ config:
   importDocumentNodeExternallyFrom: near-operation-file
 ```
 
+### `pureMagicComment`
+
+type: `boolean`
+default: `false`
+
+This config adds PURE magic comment to the static variables to enforce treeshaking for your bundler.
+
+
 ### `scalars`
 
 type: `ScalarsMap`
@@ -289,6 +310,20 @@ config:
   typesPrefix: I
 ```
 
+### `typesSuffix`
+
+type: `string`
+default: ``
+
+Suffixes all the generated types.
+
+#### Usage Examples
+
+```yml
+config:
+  typesSuffix: I
+```
+
 ### `skipTypename`
 
 type: `boolean`
@@ -317,3 +352,11 @@ in the selection set, and makes it non-optional
 config:
   nonOptionalTypename: true
 ```
+
+### `useTypeImports`
+
+type: `boolean`
+default: `false`
+
+Will use `import type {}` rather than `import {}` when importing only types. This gives
+compatibility with TypeScript's "importsNotUsedAsValues": "error" option

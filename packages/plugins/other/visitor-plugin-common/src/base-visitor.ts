@@ -16,17 +16,20 @@ import { ImportDeclaration, FragmentImport } from './imports';
 
 export interface BaseVisitorConvertOptions {
   useTypesPrefix?: boolean;
+  useTypesSuffix?: boolean;
 }
 
 export interface ParsedConfig {
   scalars: ParsedScalarsMap;
   convert: ConvertFn;
   typesPrefix: string;
+  typesSuffix: string;
   addTypename: boolean;
   nonOptionalTypename: boolean;
   externalFragments: LoadedFragment[];
   fragmentImports: ImportDeclaration<FragmentImport>[];
   immutableTypes: boolean;
+  useTypeImports: boolean;
 }
 
 export interface RawConfig {
@@ -94,6 +97,17 @@ export interface RawConfig {
    */
   typesPrefix?: string;
   /**
+   * @default ""
+   * @description Suffixes all the generated types.
+   *
+   * @exampleMarkdown
+   * ```yml
+   * config:
+   *   typesSuffix: I
+   * ```
+   */
+  typesSuffix?: string;
+  /**
    * @default false
    * @description Does not add __typename to the generated types, unless it was specified in the selection set.
    *
@@ -116,6 +130,20 @@ export interface RawConfig {
    * ```
    */
   nonOptionalTypename?: boolean;
+  /**
+   * @name useTypeImports
+   * @type boolean
+   * @default false
+   * @description Will use `import type {}` rather than `import {}` when importing only types. This gives
+   * compatibility with TypeScript's "importsNotUsedAsValues": "error" option
+   *
+   * @example
+   * ```yml
+   * config:
+   *   useTypeImports: true
+   * ```
+   */
+  useTypeImports?: boolean;
 
   /* The following configuration are for preset configuration and should not be set manually (for most use cases...) */
   /**
@@ -141,10 +169,12 @@ export class BaseVisitor<TRawConfig extends RawConfig = RawConfig, TPluginConfig
     this._parsedConfig = {
       convert: convertFactory(rawConfig),
       typesPrefix: rawConfig.typesPrefix || '',
+      typesSuffix: rawConfig.typesSuffix || '',
       externalFragments: rawConfig.externalFragments || [],
       fragmentImports: rawConfig.fragmentImports || [],
       addTypename: !rawConfig.skipTypename,
       nonOptionalTypename: !!rawConfig.nonOptionalTypename,
+      useTypeImports: !!rawConfig.useTypeImports,
       ...((additionalConfig || {}) as any),
     };
 
@@ -170,8 +200,21 @@ export class BaseVisitor<TRawConfig extends RawConfig = RawConfig, TPluginConfig
 
   public convertName(node: ASTNode | string, options?: BaseVisitorConvertOptions & ConvertOptions): string {
     const useTypesPrefix = typeof (options && options.useTypesPrefix) === 'boolean' ? options.useTypesPrefix : true;
+    const useTypesSuffix = typeof (options && options.useTypesSuffix) === 'boolean' ? options.useTypesSuffix : true;
 
-    return (useTypesPrefix ? this.config.typesPrefix : '') + this.config.convert(node, options);
+    let convertedName = '';
+
+    if (useTypesPrefix) {
+      convertedName += this.config.typesPrefix;
+    }
+
+    convertedName += this.config.convert(node, options);
+
+    if (useTypesSuffix) {
+      convertedName += this.config.typesSuffix;
+    }
+
+    return convertedName;
   }
 
   public getOperationSuffix(

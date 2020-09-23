@@ -2,7 +2,7 @@ import gql from 'graphql-tag';
 import * as VueApolloComposable from '@vue/apollo-composable';
 import * as VueCompositionApi from '@vue/composition-api';
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: any }> = { [K in keyof T]: T[K] };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type ReactiveFunction<TParam> = () => TParam;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -548,10 +548,11 @@ export const SubmitRepositoryDocument = gql`
  * });
  */
 export function useSubmitRepositoryMutation(
-  options: VueApolloComposable.UseMutationOptionsWithVariables<
-    SubmitRepositoryMutation,
-    SubmitRepositoryMutationVariables
-  >
+  options:
+    | VueApolloComposable.UseMutationOptions<SubmitRepositoryMutation, SubmitRepositoryMutationVariables>
+    | ReactiveFunction<
+        VueApolloComposable.UseMutationOptions<SubmitRepositoryMutation, SubmitRepositoryMutationVariables>
+      >
 ) {
   return VueApolloComposable.useMutation<SubmitRepositoryMutation, SubmitRepositoryMutationVariables>(
     SubmitRepositoryDocument,
@@ -590,7 +591,9 @@ export const SubmitCommentDocument = gql`
  * });
  */
 export function useSubmitCommentMutation(
-  options: VueApolloComposable.UseMutationOptionsWithVariables<SubmitCommentMutation, SubmitCommentMutationVariables>
+  options:
+    | VueApolloComposable.UseMutationOptions<SubmitCommentMutation, SubmitCommentMutationVariables>
+    | ReactiveFunction<VueApolloComposable.UseMutationOptions<SubmitCommentMutation, SubmitCommentMutationVariables>>
 ) {
   return VueApolloComposable.useMutation<SubmitCommentMutation, SubmitCommentMutationVariables>(
     SubmitCommentDocument,
@@ -632,7 +635,9 @@ export const VoteDocument = gql`
  * });
  */
 export function useVoteMutation(
-  options: VueApolloComposable.UseMutationOptionsWithVariables<VoteMutation, VoteMutationVariables>
+  options:
+    | VueApolloComposable.UseMutationOptions<VoteMutation, VoteMutationVariables>
+    | ReactiveFunction<VueApolloComposable.UseMutationOptions<VoteMutation, VoteMutationVariables>>
 ) {
   return VueApolloComposable.useMutation<VoteMutation, VoteMutationVariables>(VoteDocument, options);
 }

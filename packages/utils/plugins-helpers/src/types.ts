@@ -13,6 +13,7 @@ export namespace Types {
       [name: string]: CodegenPlugin;
     };
     skipDocumentsValidation?: boolean;
+    pluginContext?: { [key: string]: any };
   }
 
   export type FileOutput = {
@@ -88,7 +89,88 @@ export namespace Types {
     [url: string]: UrlSchemaOptions;
   }
 
-  export type LocalSchemaPath = string;
+  /**
+   * @additionalProperties false
+   * @description Loads a schema a local file or files, with customized options for parsing/loading.
+   */
+  export interface LocalSchemaPathOptions {
+    /**
+     * @description Skips checks for graphql-import syntax and loads the file as-is, without imports support.
+     * @default true
+     */
+    skipGraphQLImport?: boolean;
+
+    /**
+     * @description Converts all GraphQL comments (`#` sign) to descriptions during the parse phase, to make it available
+     * for plugins later.
+     * @default false
+     */
+    commentDescriptions?: boolean;
+
+    /**
+     * Set to true to assume the SDL is valid.
+     *
+     * @default false
+     */
+    assumeValidSDL?: boolean;
+
+    /**
+     * By default, the parser creates AST nodes that know the location
+     * in the source that they correspond to. This configuration flag
+     * disables that behavior for performance or testing.
+     *
+     * @default false
+     */
+    noLocation?: boolean;
+
+    /**
+     * If enabled, the parser will parse empty fields sets in the Schema
+     * Definition Language. Otherwise, the parser will follow the current
+     * specification.
+     *
+     * This option is provided to ease adoption of the final SDL specification
+     * and will be removed in v16.
+     *
+     * @default false
+     */
+    allowLegacySDLEmptyFields?: boolean;
+
+    /**
+     * If enabled, the parser will parse implemented interfaces with no `&`
+     * character between each interface. Otherwise, the parser will follow the
+     * current specification.
+     *
+     * This option is provided to ease adoption of the final SDL specification
+     * and will be removed in v16.
+     *
+     * @default false
+     */
+    allowLegacySDLImplementsInterfaces?: boolean;
+
+    /**
+     * EXPERIMENTAL:
+     *
+     * If enabled, the parser will understand and parse variable definitions
+     * contained in a fragment definition. They'll be represented in the
+     * `variableDefinitions` field of the FragmentDefinitionNode.
+     *
+     * The syntax is identical to normal, query-defined variables. For example:
+     *
+     *   fragment A($var: Boolean = false) on T  {
+     *     ...
+     *   }
+     *
+     * Note: this feature is experimental and may change or be removed in the
+     * future.
+     *
+     * @default false
+     */
+    experimentalFragmentVariables?: boolean;
+  }
+  export interface LocalSchemaPathWithOptions {
+    [globPath: string]: LocalSchemaPathOptions;
+  }
+
   export type SchemaGlobPath = string;
   /**
    * @description A URL to your GraphQL endpoint, a local path to `.graphql` file, a glob pattern to your GraphQL schema files, or a JavaScript file that exports the schema to generate code from. This can also be an array which specifies multiple schemas to generate code from. You can read more about the supported formats [here](schema-field#available-formats).
@@ -96,7 +178,7 @@ export namespace Types {
   export type Schema =
     | string
     | UrlSchemaWithOptions
-    | LocalSchemaPath
+    | LocalSchemaPathWithOptions
     | SchemaGlobPath
     | SchemaWithLoader
     | SchemaFromCodeFile;
@@ -233,6 +315,9 @@ export namespace Types {
     pluginMap: {
       [name: string]: CodegenPlugin;
     };
+    pluginContext?: {
+      [name: string]: any;
+    };
   };
 
   export type OutputPreset<TPresetConfig = any> = {
@@ -337,6 +422,10 @@ export namespace Types {
      * @description If you are using the programmatic API in a browser environment, you can override this configuration to load your plugins in a way different than require.
      */
     pluginLoader?: PackageLoaderFn<CodegenPlugin>;
+    /**
+     * @description Additional context passed to plugins
+     */
+    pluginContext?: { [key: string]: any };
     /**
      * @description Allows you to override the configuration for `@graphql-tools/graphql-tag-pluck`, the tool that extracts your GraphQL operations from your code files.
      *
@@ -444,6 +533,7 @@ export type PluginFunction<T = any, TOutput extends Types.PluginOutput = Types.P
   info?: {
     outputFile?: string;
     allPlugins?: Types.ConfiguredPlugin[];
+    pluginContext?: { [key: string]: any };
     [key: string]: any;
   }
 ) => Types.Promisable<TOutput>;
@@ -453,7 +543,8 @@ export type PluginValidateFn<T = any> = (
   documents: Types.DocumentFile[],
   config: T,
   outputFile: string,
-  allPlugins: Types.ConfiguredPlugin[]
+  allPlugins: Types.ConfiguredPlugin[],
+  pluginContext?: { [key: string]: any }
 ) => Types.Promisable<void>;
 
 export type AddToSchemaResult = string | DocumentNode | undefined;

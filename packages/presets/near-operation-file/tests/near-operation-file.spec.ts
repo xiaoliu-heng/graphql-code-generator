@@ -534,7 +534,7 @@ describe('near-operation-file preset', () => {
     });
 
     expect(result.map(o => o.plugins)[0]).not.toEqual(
-      expect.arrayContaining([{ add: `import * as Types from '../types';\n` }])
+      expect.arrayContaining([{ add: { content: `import * as Types from '../types';\n` } }])
     );
   });
 
@@ -736,6 +736,28 @@ describe('near-operation-file preset', () => {
     expect(getFragmentImportsFromResult(result)).toContain(
       `import { UserFieldsFragmentDoc, UserFieldsFragment } from './user-fragment.generated';`
     );
+  });
+
+  it('Should allow external fragments to be imported from packages with function', async () => {
+    const spy = jest.fn();
+    await preset.buildGeneratesSection({
+      baseOutputDir: './src/',
+      config: {},
+      presetConfig: {
+        cwd: '/some/deep/path',
+        baseTypesPath: '~@types',
+        importAllFragmentsFrom: spy.mockReturnValue(false),
+      },
+      schemaAst: schemaNode,
+      schema: schemaDocumentNode,
+      documents: testDocuments.slice(0, 2),
+      plugins: [{ 'typescript-react-apollo': {} }],
+      pluginMap: { 'typescript-react-apollo': {} as any },
+    });
+
+    expect(spy.mock.calls.length).toBe(1);
+    expect(spy.mock.calls[0][1]).toBe('/some/deep/path/src/graphql/me-query.generated.ts');
+    expect(spy.mock.calls[0][0].path).toBe('/some/deep/path/src/graphql/user-fragment.generated.ts');
   });
 
   it('Should allow external fragments to be imported from packages', async () => {
