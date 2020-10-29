@@ -266,6 +266,15 @@
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
+"@babel/generator@^7.12.1":
+  version "7.12.1"
+  resolved "https://registry.yarnpkg.com/@babel/generator/-/generator-7.12.1.tgz#0d70be32bdaa03d7c51c8597dda76e0df1f15468"
+  integrity sha512-DB+6rafIdc9o72Yc3/Ph5h+6hUjeOp66pF0naQBgUFFuPqzQwIlPTm3xZR7YNvduIMtkDIj2t21LSQwnbCrXvg==
+  dependencies:
+    "@babel/types" "^7.12.1"
+    jsesc "^2.5.1"
+    source-map "^0.5.0"
+
 "@babel/helper-annotate-as-pure@^7.10.1":
   version "7.10.1"
   resolved "https://registry.npmjs.org/@babel/helper-annotate-as-pure/-/helper-annotate-as-pure-7.10.1.tgz#f6d08acc6f70bbd59b436262553fb2e259a1a268"
@@ -589,6 +598,11 @@
   version "7.10.4"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.10.4.tgz#9eedf27e1998d87739fb5028a5120557c06a1a64"
   integrity sha512-8jHII4hf+YVDsskTF6WuMB3X4Eh+PsUkC2ljq22so5rHvH+T8BzyL94VOdyFLNR8tBSVXOTbNHOKpR4TfRxVtA==
+
+"@babel/parser@^7.12.1":
+  version "7.12.3"
+  resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.12.3.tgz#a305415ebe7a6c7023b40b5122a0662d928334cd"
+  integrity sha512-kFsOS0IbsuhO5ojF8Hc8z/8vEIOkylVBrjiZUbLTE3XFe0Qi+uu6HjzQixkFaqr0ZPAMZcBVxEwmsnsLPZ2Xsw==
 
 "@babel/plugin-proposal-async-generator-functions@^7.10.3":
   version "7.10.3"
@@ -1293,6 +1307,21 @@
     globals "^11.1.0"
     lodash "^4.17.19"
 
+"@babel/traverse@7.12.1":
+  version "7.12.1"
+  resolved "https://registry.yarnpkg.com/@babel/traverse/-/traverse-7.12.1.tgz#941395e0c5cc86d5d3e75caa095d3924526f0c1e"
+  integrity sha512-MA3WPoRt1ZHo2ZmoGKNqi20YnPt0B1S0GTZEPhhd+hw2KGUzBlHuVunj6K4sNuK+reEvyiPwtp0cpaqLzJDmAw==
+  dependencies:
+    "@babel/code-frame" "^7.10.4"
+    "@babel/generator" "^7.12.1"
+    "@babel/helper-function-name" "^7.10.4"
+    "@babel/helper-split-export-declaration" "^7.11.0"
+    "@babel/parser" "^7.12.1"
+    "@babel/types" "^7.12.1"
+    debug "^4.1.0"
+    globals "^11.1.0"
+    lodash "^4.17.19"
+
 "@babel/traverse@^7.0.0", "@babel/traverse@^7.1.0", "@babel/traverse@^7.10.1", "@babel/traverse@^7.10.3", "@babel/traverse@^7.9.0", "@babel/traverse@^7.9.6":
   version "7.10.3"
   resolved "https://registry.npmjs.org/@babel/traverse/-/traverse-7.10.3.tgz#0b01731794aa7b77b214bcd96661f18281155d7e"
@@ -1327,6 +1356,15 @@
   version "7.11.5"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.11.5.tgz#d9de577d01252d77c6800cee039ee64faf75662d"
   integrity sha512-bvM7Qz6eKnJVFIn+1LPtjlBFPVN5jNDc1XmN15vWe7Q3DPBufWWsLiIvUu7xW87uTG6QoggpIDnUgLQvPheU+Q==
+  dependencies:
+    "@babel/helper-validator-identifier" "^7.10.4"
+    lodash "^4.17.19"
+    to-fast-properties "^2.0.0"
+
+"@babel/types@7.12.1", "@babel/types@^7.12.1":
+  version "7.12.1"
+  resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.12.1.tgz#e109d9ab99a8de735be287ee3d6a9947a190c4ae"
+  integrity sha512-BzSY3NJBKM4kyatSOWh3D/JJ2O3CVzBybHWxtgxnggaxEuaSTTDqeiSb/xk9lrkw2Tbqyivw5ZU4rT+EfznQsA==
   dependencies:
     "@babel/helper-validator-identifier" "^7.10.4"
     lodash "^4.17.19"
@@ -2050,14 +2088,14 @@
     "@graphql-tools/utils" "6.2.2"
     tslib "~2.0.1"
 
-"@graphql-tools/github-loader@6.2.2", "@graphql-tools/github-loader@^6":
-  version "6.2.2"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/github-loader/-/github-loader-6.2.2.tgz#6d0bf63e5dd0319c47cfb0cd52e2b6632e7bb7da"
-  integrity sha512-tPUWfD8Dwc2YuiO8WtMg9rtsnq1tyfk8NEfjwxqe7cKwyEKRb8ybRURT/acwEroAgENc3Jwa3cgju+OJCbw4pQ==
+"@graphql-tools/github-loader@6.2.5", "@graphql-tools/github-loader@^6":
+  version "6.2.5"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/github-loader/-/github-loader-6.2.5.tgz#460dff6f5bbaa26957a5ea3be4f452b89cc6a44b"
+  integrity sha512-DLuQmYeNNdPo8oWus8EePxWCfCAyUXPZ/p1PWqjrX/NGPyH2ZObdqtDAfRHztljt0F/qkBHbGHCEk2TKbRZTRw==
   dependencies:
-    "@graphql-tools/graphql-tag-pluck" "6.2.2"
-    "@graphql-tools/utils" "6.2.2"
-    cross-fetch "3.0.5"
+    "@graphql-tools/graphql-tag-pluck" "^6.2.6"
+    "@graphql-tools/utils" "^7.0.0"
+    cross-fetch "3.0.6"
     tslib "~2.0.1"
 
 "@graphql-tools/graphql-file-loader@6.2.2", "@graphql-tools/graphql-file-loader@^6", "@graphql-tools/graphql-file-loader@^6.0.0":
@@ -2079,6 +2117,19 @@
     "@babel/traverse" "7.11.5"
     "@babel/types" "7.11.5"
     "@graphql-tools/utils" "6.2.2"
+    tslib "~2.0.1"
+  optionalDependencies:
+    vue-template-compiler "^2.6.12"
+
+"@graphql-tools/graphql-tag-pluck@^6.2.6":
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/graphql-tag-pluck/-/graphql-tag-pluck-6.3.0.tgz#b1c178fe6e8c4823ca611cf1392f530ad0490dd9"
+  integrity sha512-wdXE6iKTD/ePvhPaukhXm6M8FcsiR9rrwFvkYN96sx2UjDjXzU6vS1QUniNuwjRPaQuSe635vqfaUSN9JuNHvA==
+  dependencies:
+    "@babel/parser" "7.11.5"
+    "@babel/traverse" "7.12.1"
+    "@babel/types" "7.12.1"
+    "@graphql-tools/utils" "^7.0.0"
     tslib "~2.0.1"
   optionalDependencies:
     vue-template-compiler "^2.6.12"
@@ -2231,6 +2282,15 @@
   version "6.2.2"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-6.2.2.tgz#490236f539754ec59cd0490919b00ed9e0dba604"
   integrity sha512-a0SSYF76dnKHs8te4Igfnrrq1VOO4sFG8yx3ehO7464eGUfUUYo2QmNRjhxny2HRMvqzX40xuQikyg6LBXDNLQ==
+  dependencies:
+    "@ardatan/aggregate-error" "0.0.6"
+    camel-case "4.1.1"
+    tslib "~2.0.1"
+
+"@graphql-tools/utils@^7.0.0":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-7.0.1.tgz#8bf54676de65878d2b1ba34fcd58ef4d8ae0b589"
+  integrity sha512-DsV7XfEJE6rPQ3Ysusf28MPun/YL+pc7L0hiBOph/F8+/H1pW1ndRqRrnmX3Owrq9xW1EHSw2WU8qvdjn8kOjw==
   dependencies:
     "@ardatan/aggregate-error" "0.0.6"
     camel-case "4.1.1"
@@ -6353,7 +6413,7 @@ cross-fetch@3.0.5:
   dependencies:
     node-fetch "2.6.0"
 
-cross-fetch@^3.0.5:
+cross-fetch@3.0.6, cross-fetch@^3.0.5:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.0.6.tgz#3a4040bc8941e653e0e9cf17f29ebcd177d3365c"
   integrity sha512-KBPUbqgFjzWlVcURG+Svp9TlhA5uliYtiNx/0r8nv0pdypeQCRJ9IaSIc3q/x3q8t3F75cHuwxVql1HFGHCNJQ==
@@ -8818,24 +8878,24 @@ graphql-language-service-interface@2.4.0:
     vscode-languageserver-types "^3.15.1"
 
 graphql-language-service-parser@^1.6.0:
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-parser/-/graphql-language-service-parser-1.6.3.tgz#16c1efdb005c982de0500161d67e96ce749cf1d5"
-  integrity sha512-UjmVXcSN59pCkFDBIZav0rTdz7ISeYAgGshA/0OpFlrJ6ZkS3hlOBbu/QvLyjRvTcjKpx95qT299auL39kE+/g==
+  version "1.6.4"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-parser/-/graphql-language-service-parser-1.6.4.tgz#d5b92db1e50a91cdcf7f54f79253e13455e20257"
+  integrity sha512-Y365zUFfJ1GJ9NeRHb5Z/HBo6EnbuTi187Gkuldwd1YIDc0QcD7kqz6U5g043zd7BI/UZQth13Zd7pElvbb2zw==
   dependencies:
-    graphql-language-service-types "^1.6.2"
+    graphql-language-service-types "^1.6.3"
     typescript "^3.9.5"
 
-graphql-language-service-types@^1.6.0, graphql-language-service-types@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-types/-/graphql-language-service-types-1.6.2.tgz#c42c5d67c05120d422076e0965794ae9c589689e"
-  integrity sha512-5cslPoUd8P7/EjJ5L3/zs0NBeDhvQHhjUMbjKQakwqu4tZXplriZ9KvvA+Q/n4w/Rn79+3cbr7maNtsTk6/TmQ==
+graphql-language-service-types@^1.6.0, graphql-language-service-types@^1.6.3:
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-types/-/graphql-language-service-types-1.6.3.tgz#1a6ba25140ec9ffc6d7f36eca7a4069e91500f3d"
+  integrity sha512-VDtBhdan1iSe7ad7+eBbsO5rrzWQpC6aV4SxSHEi8AtEQOFXpnL9Lq5jSaN8O02pGvAUr4wNUPu0oRU5g2XmVA==
 
 graphql-language-service-utils@^2.4.0:
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/graphql-language-service-utils/-/graphql-language-service-utils-2.4.2.tgz#0333377e2aad85b61bc9c0304e61cea13eec90c7"
-  integrity sha512-el9WfW0LyKaxpUzsIOec/qAjSdXIQ6hVRAX2HV8bN0+yPO93m6sMfPDtNrVkj/2FkwtruCrs01TB0dB1Qk9Dew==
+  version "2.4.3"
+  resolved "https://registry.yarnpkg.com/graphql-language-service-utils/-/graphql-language-service-utils-2.4.3.tgz#e4f4d1a7e950dcc5ada2456096c88ad5b2bab9f2"
+  integrity sha512-XSCMKsV4GuVSGdW8RJTpO/IJDMXgESDJLu67SAuXFXwfel84j1gWrsmBAUeu6Di6NUEoM9NOCEtJv3LbU+/8qw==
   dependencies:
-    graphql-language-service-types "^1.6.2"
+    graphql-language-service-types "^1.6.3"
 
 graphql-request@^3.1.0:
   version "3.1.0"
@@ -8879,10 +8939,15 @@ graphql-upload@^8.0.2:
     http-errors "^1.7.3"
     object-path "^0.11.4"
 
-graphql@15.3.0, graphql@^14.5.3, graphql@^15.0.0:
+graphql@15.3.0, graphql@^14.5.3:
   version "15.3.0"
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.3.0.tgz#3ad2b0caab0d110e3be4a5a9b2aa281e362b5278"
   integrity sha512-GTCJtzJmkFLWRfFJuoo9RWWa/FfamUHgiFosxi/X1Ani4AVWbeyBenZTNX6dM+7WSbbFfTo/25eh0LLkwHMw2w==
+
+graphql@^15.0.0:
+  version "15.4.0"
+  resolved "https://registry.yarnpkg.com/graphql/-/graphql-15.4.0.tgz#e459dea1150da5a106486ba7276518b5295a4347"
+  integrity sha512-EB3zgGchcabbsU9cFe1j+yxdzKQKAbGUWRb13DsrsMN1yyfmmIq+2+L5MqVWcDCE4V89R5AyUOi7sMOGxdsYtA==
 
 gray-matter@^4.0.2:
   version "4.0.2"
